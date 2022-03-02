@@ -5,7 +5,8 @@ export const globalTheme = extendTheme({
     global: {
         body: {
             bg: '#2b2a33',
-            color: '#fff'
+            color: '#fff',
+            fontFamily: 'Roboto Mono'
         }
     },
   },
