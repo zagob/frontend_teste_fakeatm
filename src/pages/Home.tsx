@@ -25,7 +25,7 @@ export function Home() {
   const {
     register,
     handleSubmit,
-    formState: { dirtyFields, errors, isSubmitting },
+    formState: { dirtyFields, errors, isSubmitted, isSubmitting },
   } = useForm<SignInFormData>({
     defaultValues: {
       login: "",
@@ -38,9 +38,14 @@ export function Home() {
     console.log(values);
   };
 
+  const loginColors = dirtyFields.login && "#43aa8b";
+  const loginError = errors.login?.message && "red";
+
+  const passwordColors = dirtyFields.password && "#43aa8b";
+  const passwordError = errors.password?.message && "red";
+
   return (
     <Flex
-      background="linear-gradient(5deg, rgba(71,111,128,0.3) 0%, rgba(43,42,51,1) 100%)"
       alignItems="center"
       backgroundSize="cover"
       justifyContent="center"
@@ -62,74 +67,32 @@ export function Home() {
           </Heading>
 
           <InputBase
-            icon={<BiUser color={dirtyFields.login ? "#43aa8b" : "#000"} />}
+            icon={<BiUser color={loginColors || loginError || "#000"} />}
             nameRef="login"
-            // error={errors.login}
-            variant="outline"
-            isInvalid={true}
-            errorBorderColor="1px solid red"
-            outline={dirtyFields.login ? `1px solid #43aa8b` : "#fff"}
+            error={errors.login?.message}
+            outline={
+              (dirtyFields.login && `1px solid #43aa8b`) ||
+              (errors.login?.message && "1px solid red") ||
+              ""
+            }
             {...register("login")}
           />
           <InputBase
             icon={
               <RiLockPasswordLine
-                color={dirtyFields.password ? "#43aa8b" : "#000"}
+                color={passwordColors || passwordError || "#000"}
               />
             }
+            error={errors.password?.message}
             nameRef="password"
             type="password"
-            outline={dirtyFields.password ? `1px solid #43aa8b` : "none"}
+            outline={
+              (dirtyFields.password && `1px solid #43aa8b`) ||
+              (errors.password?.message && "1px solid red") ||
+              ""
+            }
             {...register("password")}
           />
-
-          {/* <InputComponent
-            // name={`s`}
-            
-            icon={<BiUser color="#000" />}
-            {...register("login")}
-          /> */}
-
-          {/* <FormControl>
-            <InputGroup>
-              <InputLeftElement
-                children={<BiUser color={isFilledLogin ? "#43aa8b" : "#000"} />}
-              />
-              <Input
-                placeholder="Login"
-                color="#000"
-                _placeholder={{ color: "#000", opacity: "0.5" }}
-                background="gray.200"
-                border="none"
-                outline={isFilledLogin ? `1px solid #43aa8b` : ""}
-                {...register("login", {
-                  required: true,
-                })}
-              />
-            </InputGroup>
-          </FormControl>
-          <FormControl>
-            <InputGroup>
-              <InputLeftElement
-                children={
-                  <RiLockPasswordLine
-                    color={isFilledPassword ? "#43aa8b" : "#000"}
-                  />
-                }
-              />
-              <Input
-                placeholder="Senha"
-                color="#000"
-                _placeholder={{ color: "#000", opacity: "0.5" }}
-                background="gray.200"
-                border="none"
-                outline={isFilledPassword ? `1px solid #43aa8b` : ""}
-                {...register("password", {
-                  required: true,
-                })}
-              />
-            </InputGroup>
-          </FormControl> */}
           <Flex gap={6} justifyContent="center" mt={5}>
             <ComponentButton label="Entrar" bg="#000" />
             <ComponentButton label="Cadastre-se" bg="#25239E" />

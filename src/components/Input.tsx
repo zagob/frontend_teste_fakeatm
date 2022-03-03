@@ -5,16 +5,18 @@ import {
   Input as InputChakra,
   InputProps as ChakraInputProps,
   forwardRef,
+  Text,
 } from "@chakra-ui/react";
 import { ForwardRefRenderFunction, ReactElement } from "react";
 
 interface InputProps extends ChakraInputProps {
   icon: ReactElement;
   nameRef: string;
+  error?: string;
 }
 
 const InputComponent: ForwardRefRenderFunction<HTMLInputElement, InputProps> = (
-  { nameRef, icon, ...rest },
+  { nameRef, icon, error, ...rest },
   ref
 ) => {
   return (
@@ -29,10 +31,10 @@ const InputComponent: ForwardRefRenderFunction<HTMLInputElement, InputProps> = (
           color="#000"
           _placeholder={{ color: "#000", opacity: "0.5" }}
           background="gray.200"
-          border="none"
           {...rest}
         />
       </InputGroup>
+      {error && <Text fontSize="x-small" fontWeight="bold" color="red.500">{error}*</Text>}
     </FormControl>
   );
 };
