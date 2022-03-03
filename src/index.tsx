@@ -7,12 +7,10 @@ import { ChakraProvider } from "@chakra-ui/react";
 import { globalTheme } from "./styles/globalTheme";
 
 ReactDOM.render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <ChakraProvider theme={globalTheme}>
-        <App />
-      </ChakraProvider>
-    </BrowserRouter>
-  </React.StrictMode>,
+  <BrowserRouter>
+    <ChakraProvider theme={globalTheme}>
+      <App />
+    </ChakraProvider>
+  </BrowserRouter>,
   document.getElementById("root")
 );

@@ -1,4 +1,12 @@
-import { Box, Flex, Heading, VStack } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Flex,
+  Heading,
+  SimpleGrid,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
 
 import { ComponentButton } from "../components/Button";
 
@@ -10,6 +18,7 @@ import { BiUser } from "react-icons/bi";
 import { RiLockPasswordLine } from "react-icons/ri";
 import { InputBase } from "../components/Input";
 import { useEffect } from "react";
+import { Link } from "react-router-dom";
 
 interface SignInFormData {
   login: string;
@@ -21,11 +30,11 @@ const signInFormSchema = yup.object().shape({
   password: yup.string().required("Senha obrigatória"),
 });
 
-export function Home() {
+export function Login() {
   const {
     register,
     handleSubmit,
-    formState: { dirtyFields, errors, isSubmitted, isSubmitting },
+    formState: { dirtyFields, errors, isSubmitting },
   } = useForm<SignInFormData>({
     defaultValues: {
       login: "",
@@ -69,6 +78,7 @@ export function Home() {
           <InputBase
             icon={<BiUser color={loginColors || loginError || "#000"} />}
             nameRef="login"
+            placeholder="Login"
             error={errors.login?.message}
             outline={
               (dirtyFields.login && `1px solid #43aa8b`) ||
@@ -85,6 +95,7 @@ export function Home() {
             }
             error={errors.password?.message}
             nameRef="password"
+            placeholder="Senha"
             type="password"
             outline={
               (dirtyFields.password && `1px solid #43aa8b`) ||
@@ -93,10 +104,26 @@ export function Home() {
             }
             {...register("password")}
           />
-          <Flex gap={6} justifyContent="center" mt={5}>
-            <ComponentButton label="Entrar" bg="#000" />
-            <ComponentButton label="Cadastre-se" bg="#25239E" />
+          <Flex w="100%" gap={6} justifyContent="center" mt={5}>
+            <ComponentButton w="100%" label="Entrar" bg="#000" type="submit" />
+            <Link to="/cadastro">
+              <ComponentButton
+                w="100%"
+                label="Cadastre-se"
+                bg="#25239E"
+                type="button"
+              />
+            </Link>
           </Flex>
+          <Link to="/clientes">
+            <Text
+              transition="0.2s"
+              _hover={{ color: "#b9fbc0" }}
+              textAlign="center"
+            >
+              Clientes cadastrados na plataforma
+            </Text>
+          </Link>
         </VStack>
       </Box>
     </Flex>
