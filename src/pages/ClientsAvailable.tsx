@@ -6,6 +6,7 @@ import {
   Heading,
   IconButton,
   Input,
+  Spinner,
   Table,
   TableCaption,
   Tbody,
@@ -51,16 +52,16 @@ export function ClientsAvailable() {
     getClients();
   }, []);
 
-  //   useEffect(() => {
-  //     setClientEdit(undefined);
-  //   }, [onClose]);
-
   async function handleEditClient(
     data: ClientPropsData
   ): Promise<ClientPropsData | void> {
     console.log(clientEdit?.id);
     console.log(data);
-    await api.put(`/clients/${clientEdit?.id}`, data);
+
+    await api.put(`/clients/${clientEdit?.id}`, data).finally(() => {
+      // setLoading(false);
+    });
+
     setClients((old) =>
       old.map((client) =>
         client.id === clientEdit?.id ? { ...client, ...data } : client
@@ -102,48 +103,50 @@ export function ClientsAvailable() {
             Lista de Clientes
           </Heading>
         </Box>
-        <Divider />
-        <Table variant="simple">
-          {/* <TableCaption>Imperial to metric conversion factors</TableCaption> */}
-          <Thead>
-            <Tr>
-              <Th color="#fff" fontSize="md">
-                login
-              </Th>
-              <Th color="#fff" fontSize="md">
-                name
-              </Th>
-              <Th color="#fff" fontSize="md">
-                address
-              </Th>
-              <Th color="#fff" fontSize="md">
-                CPF
-              </Th>
-              <Th isNumeric></Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {clients.map((client) => (
-              <Tr key={client.id}>
-                <Td>{client.login}</Td>
-                <Td>{client.name}</Td>
-                <Td>{client.address}</Td>
-                <Td>{client.cpf}</Td>
-                <Td isNumeric>
-                  <IconButton
-                    onClick={() => {
-                      setClientEdit(client);
-                      onOpen();
-                    }}
-                    colorScheme="blue"
-                    aria-label="Search database"
-                    icon={<BiEdit />}
-                  />
-                </Td>
+        {clients.length === 0 ? (
+          <Spinner />
+        ) : (
+          <Table variant="simple">
+            <Thead>
+              <Tr>
+                <Th color="#fff" fontSize="md">
+                  login
+                </Th>
+                <Th color="#fff" fontSize="md">
+                  name
+                </Th>
+                <Th color="#fff" fontSize="md">
+                  address
+                </Th>
+                <Th color="#fff" fontSize="md">
+                  CPF
+                </Th>
+                <Th isNumeric></Th>
               </Tr>
-            ))}
-          </Tbody>
-        </Table>
+            </Thead>
+            <Tbody>
+              {clients.map((client) => (
+                <Tr key={client.id}>
+                  <Td>{client.login}</Td>
+                  <Td>{client.name}</Td>
+                  <Td>{client.address}</Td>
+                  <Td>{client.cpf}</Td>
+                  <Td isNumeric>
+                    <IconButton
+                      onClick={() => {
+                        setClientEdit(client);
+                        onOpen();
+                      }}
+                      colorScheme="blue"
+                      aria-label="Search database"
+                      icon={<BiEdit />}
+                    />
+                  </Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
+        )}
       </VStack>
     </Flex>
   );

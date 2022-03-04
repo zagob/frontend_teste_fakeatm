@@ -1,7 +1,9 @@
 import {
+  Box,
   Button,
   Flex,
   FormControl,
+  FormLabel,
   Input,
   Modal,
   ModalBody,
@@ -10,9 +12,10 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  VStack,
 } from "@chakra-ui/react";
-import { useEffect } from "react";
-import { useForm, useWatch } from "react-hook-form";
+import React, { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { ClientPropsData } from "../pages/ClientsAvailable";
 import { ComponentButton } from "./Button";
 
@@ -38,7 +41,13 @@ export function SimpleModal({
   clientObjectEdit,
   handleEditClient,
 }: ModalProps) {
-  const { register, handleSubmit, reset } = useForm<ClientPropsData>({
+  const [loading, setLoading] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { isSubmitting },
+  } = useForm<ClientPropsData>({
     defaultValues: {
       name: clientObjectEdit?.name,
       ...clientObjectEdit,
@@ -57,26 +66,41 @@ export function SimpleModal({
       <ModalContent background="#2b2a33">
         <ModalHeader>{clientObjectEdit?.name}</ModalHeader>
         <ModalCloseButton />
-        <ModalBody>
-          <Flex as="form" onSubmit={handleSubmit(handleEditClient)}>
-            <FormControl>
-              <Input {...register("login")} />
-              <Input {...register("name")} />
-              <Input {...register("address")} />
-              <Input {...register("cpf")} />
-            </FormControl>
-            <ComponentButton type="submit" bg="#000" label="Editar" />
-          </Flex>
-        </ModalBody>
+        <Box as="form" onSubmit={handleSubmit(handleEditClient)}>
+          <ModalBody>
+            <Flex flexDirection="column">
+              <VStack spacing={5}>
+                <FormControl>
+                  <FormLabel>Login:</FormLabel>
+                  <Input {...register("login")} />
+                </FormControl>
+                <FormControl>
+                  <FormLabel>Nome:</FormLabel>
+                  <Input {...register("name")} />
+                </FormControl>
+                <FormControl>
+                  <FormLabel>Endereco:</FormLabel>
+                  <Input {...register("address")} />
+                </FormControl>
+                <FormControl>
+                  <FormLabel>CPF:</FormLabel>
+                  <Input {...register("cpf")} />
+                </FormControl>
+              </VStack>
+            </Flex>
+          </ModalBody>
 
-        <button onClick={() => {}}>reset</button>
-
-        <ModalFooter>
-          <Button colorScheme="blue" mr={3} onClick={onClose}>
-            Close
-          </Button>
-          <Button variant="ghost">Secondary Action</Button>
-        </ModalFooter>
+          <ModalFooter>
+            <Button
+              colorScheme="blue"
+              mr={3}
+              type="submit"
+              isLoading={isSubmitting}
+            >
+              Editar
+            </Button>
+          </ModalFooter>
+        </Box>
       </ModalContent>
     </Modal>
   );
