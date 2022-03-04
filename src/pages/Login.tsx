@@ -1,12 +1,4 @@
-import {
-  Box,
-  Button,
-  Flex,
-  Heading,
-  SimpleGrid,
-  Text,
-  VStack,
-} from "@chakra-ui/react";
+import { Box, Flex, Heading, Text, useToast, VStack } from "@chakra-ui/react";
 
 import { ComponentButton } from "../components/Button";
 
@@ -17,8 +9,9 @@ import * as yup from "yup";
 import { BiUser } from "react-icons/bi";
 import { RiLockPasswordLine } from "react-icons/ri";
 import { InputBase } from "../components/Input";
-import { useEffect } from "react";
+import { useContext } from "react";
 import { Link } from "react-router-dom";
+import { AuthContext } from "../hooks/AuthContext";
 
 interface SignInFormData {
   login: string;
@@ -31,6 +24,8 @@ const signInFormSchema = yup.object().shape({
 });
 
 export function Login() {
+  const toast = useToast();
+  const { signIn } = useContext(AuthContext);
   const {
     register,
     handleSubmit,
@@ -44,7 +39,17 @@ export function Login() {
   });
 
   const handleSignIn: SubmitHandler<SignInFormData> = async (values) => {
-    console.log(values);
+    const response = await signIn(values);
+
+    if (response === "err") {
+      return toast({
+        duration: 2000,
+        position: "top-right",
+        isClosable: true,
+        status: "warning",
+        title: "Login ou Senha inválidos",
+      });
+    }
   };
 
   const loginColors = dirtyFields.login && "#43aa8b";

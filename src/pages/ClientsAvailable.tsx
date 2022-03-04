@@ -1,30 +1,29 @@
 import {
   Box,
   Button,
-  Divider,
   Flex,
   Heading,
   IconButton,
-  Input,
   Spinner,
   Table,
-  TableCaption,
   Tbody,
   Td,
   Text,
-  Tfoot,
   Th,
   Thead,
   Tr,
   useDisclosure,
+  useToast,
   VStack,
 } from "@chakra-ui/react";
-import { FormEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { BiEdit } from "react-icons/bi";
 import { MdOutlineArrowBack } from "react-icons/md";
+import { BsTrash } from "react-icons/bs";
 import { Link } from "react-router-dom";
-import { SimpleModal } from "../components/Modal";
+import { ModalEditClient } from "../components/Modals/ModalEditClient";
 import { api } from "../database/axios";
+import { ModalDeleteClient } from "../components/Modals/ModalDeleteClient";
 
 export interface ClientPropsData {
   id: string;
@@ -38,7 +37,9 @@ export interface ClientPropsData {
 }
 
 export function ClientsAvailable() {
+  const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [modal, setModal] = useState("modal1");
   const [clients, setClients] = useState<ClientPropsData[]>([]);
   const [clientEdit, setClientEdit] = useState<ClientPropsData | null>(null);
 
@@ -55,18 +56,47 @@ export function ClientsAvailable() {
   async function handleEditClient(
     data: ClientPropsData
   ): Promise<ClientPropsData | void> {
-    console.log(clientEdit?.id);
-    console.log(data);
+    const response = await api
+      .put(`/clients/${clientEdit?.id}`, data)
+      .catch(() => {
+        return toast({
+          title: "Login já existente",
+          status: "warning",
+          duration: 5000,
+          isClosable: true,
+          position: "top-right",
+        });
+      });
 
-    await api.put(`/clients/${clientEdit?.id}`, data).finally(() => {
-      // setLoading(false);
+    if (typeof response === "number") {
+      return;
+    }
+
+    toast({
+      title: "Cliente Alterado com Sucesso!",
+      status: "success",
+      duration: 5000,
+      isClosable: true,
+      position: "top-right",
     });
-
     setClients((old) =>
       old.map((client) =>
         client.id === clientEdit?.id ? { ...client, ...data } : client
       )
     );
+    onClose();
+  }
+
+  async function handleDeleteClient(id: string) {
+    // await api.delete('/')
+    setClients((clients) => clients.filter((client) => client.id !== id));
+    toast({
+      title: "Cliente Excluido com Sucesso!",
+      status: "success",
+      duration: 5000,
+      isClosable: true,
+      position: "top-right",
+    });
     onClose();
   }
 
@@ -78,12 +108,23 @@ export function ClientsAvailable() {
       justify="center"
       margin="0 auto"
     >
-      <SimpleModal
-        isOpen={isOpen}
-        onClose={onClose}
-        clientObjectEdit={clientEdit}
-        handleEditClient={handleEditClient}
-      />
+      {modal === "modal1" && (
+        <ModalEditClient
+          isOpen={isOpen}
+          onClose={onClose}
+          clientObjectEdit={clientEdit}
+          handleEditClient={handleEditClient}
+        />
+      )}
+
+      {modal === "modal2" && (
+        <ModalDeleteClient
+          isOpen={isOpen}
+          onClose={onClose}
+          clientObjectEdit={clientEdit}
+          handleDeleteClient={handleDeleteClient}
+        />
+      )}
       <VStack spacing={10} w="100%">
         <Box position="relative" w="100%">
           <Link to="/">
@@ -113,10 +154,10 @@ export function ClientsAvailable() {
                   login
                 </Th>
                 <Th color="#fff" fontSize="md">
-                  name
+                  Nome
                 </Th>
                 <Th color="#fff" fontSize="md">
-                  address
+                  Endereço
                 </Th>
                 <Th color="#fff" fontSize="md">
                   CPF
@@ -134,12 +175,24 @@ export function ClientsAvailable() {
                   <Td isNumeric>
                     <IconButton
                       onClick={() => {
+                        setModal("modal1");
                         setClientEdit(client);
                         onOpen();
                       }}
                       colorScheme="blue"
                       aria-label="Search database"
                       icon={<BiEdit />}
+                      mr={4}
+                    />
+                    <IconButton
+                      onClick={() => {
+                        setModal("modal2");
+                        setClientEdit(client);
+                        onOpen();
+                      }}
+                      colorScheme="red"
+                      aria-label="Search database"
+                      icon={<BsTrash />}
                     />
                   </Td>
                 </Tr>

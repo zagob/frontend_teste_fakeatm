@@ -14,10 +14,9 @@ import {
   ModalOverlay,
   VStack,
 } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { ClientPropsData } from "../pages/ClientsAvailable";
-import { ComponentButton } from "./Button";
+import { ClientPropsData } from "../../pages/ClientsAvailable";
 
 interface ModalProps {
   isOpen: boolean;
@@ -26,22 +25,12 @@ interface ModalProps {
   handleEditClient: (data: ClientPropsData) => Promise<ClientPropsData | void>;
 }
 
-// interface EditFormData {
-//     login: string;
-//     password: string;
-//     name: string;
-//     birth_date: Date;
-//     address: string;
-//     cpf: string;
-//   }
-
-export function SimpleModal({
+export function ModalEditClient({
   isOpen,
   onClose,
   clientObjectEdit,
   handleEditClient,
 }: ModalProps) {
-  const [loading, setLoading] = useState(false);
   const {
     register,
     handleSubmit,
@@ -70,20 +59,20 @@ export function SimpleModal({
           <ModalBody>
             <Flex flexDirection="column">
               <VStack spacing={5}>
-                <FormControl>
-                  <FormLabel>Login:</FormLabel>
+                <FormControl isRequired>
+                  <FormLabel>Login</FormLabel>
                   <Input {...register("login")} />
                 </FormControl>
-                <FormControl>
-                  <FormLabel>Nome:</FormLabel>
+                <FormControl isRequired>
+                  <FormLabel>Nome</FormLabel>
                   <Input {...register("name")} />
                 </FormControl>
-                <FormControl>
-                  <FormLabel>Endereco:</FormLabel>
+                <FormControl isRequired>
+                  <FormLabel>Endereco</FormLabel>
                   <Input {...register("address")} />
                 </FormControl>
-                <FormControl>
-                  <FormLabel>CPF:</FormLabel>
+                <FormControl isRequired>
+                  <FormLabel>CPF</FormLabel>
                   <Input {...register("cpf")} />
                 </FormControl>
               </VStack>

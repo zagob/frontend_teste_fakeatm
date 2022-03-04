@@ -1,13 +1,9 @@
-import * as React from "react";
 import {
   Box,
   Flex,
-  FormControl,
   Heading,
-  Input,
-  InputGroup,
-  InputLeftElement,
   SimpleGrid,
+  useToast,
   VStack,
 } from "@chakra-ui/react";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -22,6 +18,7 @@ import { RiLockPasswordLine } from "react-icons/ri";
 import { FaRegAddressCard } from "react-icons/fa";
 import { MdDateRange, MdDriveFileRenameOutline } from "react-icons/md";
 import { CgFileDocument } from "react-icons/cg";
+import { api } from "../database/axios";
 
 interface SubscribeInFormData {
   login: string;
@@ -42,9 +39,11 @@ const subscribeInFormSchema = yup.object().shape({
 });
 
 export function Subscribe() {
+  const toast = useToast();
   const {
     register,
     handleSubmit,
+    reset,
     formState: { dirtyFields, errors, isSubmitting },
   } = useForm<SubscribeInFormData>({
     defaultValues: {
@@ -61,7 +60,40 @@ export function Subscribe() {
   const handleSubscribe: SubmitHandler<SubscribeInFormData> = async (
     values
   ) => {
-    console.log(values);
+    const formatCpf = values.cpf.replace(/[^a-zA-Z0-9s]/g, "");
+
+    const data = {
+      ...values,
+      birth_date: new Date(values.birth_date).toISOString(),
+      cpf: formatCpf,
+    };
+
+    const response = await api.post("/clients", data).catch((err) => {
+      console.log(err);
+    });
+
+    if (!response) {
+      toast({
+        title: "Erro ao criar Cliente",
+        description: "Nome de login já existente",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "top-right",
+      });
+
+      return;
+    }
+
+    toast({
+      title: "Cliente criado com sucesso",
+      status: "success",
+      duration: 5000,
+      isClosable: true,
+      position: "top-right",
+    });
+
+    reset();
   };
 
   return (

@@ -10,7 +10,7 @@ import {
 } from "@chakra-ui/react";
 
 interface InputProps extends ChakraInputProps{
-  icon: ReactElement;
+  icon?: ReactElement;
   nameRef: string;
   error?: string;
   inputMask?: any | ReactNode;

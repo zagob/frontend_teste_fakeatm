@@ -5,12 +5,15 @@ import App from "./App";
 
 import { ChakraProvider } from "@chakra-ui/react";
 import { globalTheme } from "./styles/globalTheme";
+import { AuthProvider } from "./hooks/AuthContext";
 
 ReactDOM.render(
   <BrowserRouter>
-    <ChakraProvider theme={globalTheme}>
-      <App />
-    </ChakraProvider>
+    <AuthProvider>
+      <ChakraProvider theme={globalTheme}>
+        <App />
+      </ChakraProvider>
+    </AuthProvider>
   </BrowserRouter>,
   document.getElementById("root")
 );
