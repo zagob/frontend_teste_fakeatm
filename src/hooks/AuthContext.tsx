@@ -32,6 +32,7 @@ export const AuthProvider: React.FC = ({ children }) => {
     if (client) {
       api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       setClient(JSON.parse(client));
+      
       navigate("/painel");
       return;
     }
@@ -53,7 +54,10 @@ export const AuthProvider: React.FC = ({ children }) => {
         path: "/",
         secure: "none",
       });
-      setCookie(undefined, "fakeatm.client", token, {
+
+      api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
+      setCookie(undefined, "fakeatm.client", JSON.stringify(client), {
         maxAge: 60 * 60 * 24 * 1, // 1 days
         path: "/",
         secure: "none",
@@ -61,7 +65,6 @@ export const AuthProvider: React.FC = ({ children }) => {
 
       setClient(client);
 
-      api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       navigate("/painel");
     } catch (err) {
       return "err";

@@ -1,10 +1,8 @@
 import { useContext, useEffect, useState } from "react";
 import {
   Box,
-  Button,
   Flex,
-  Heading,
-  IconButton,
+  Spinner,
   Text,
   useDisclosure,
   VStack,
@@ -12,30 +10,31 @@ import {
 
 import { AuthContext } from "../hooks/AuthContext";
 
-import { AiOutlineConsoleSql, AiOutlinePoweroff } from "react-icons/ai";
 import { api } from "../database/axios";
-import { ListOperations } from "../components/ListOperations";
+import { ListOperations, OperationsProps } from "../components/ListOperations";
 import { HeaderPainel } from "../components/HeaderPainel";
 import { ComponentButton } from "../components/Button";
 import { ModalAddOperation } from "../components/Modals/ModalAddOperation";
 import { parseCookies } from "nookies";
 
 export function Dashboard() {
-  const {  } = useContext(AuthContext);
+  const { client } = useContext(AuthContext);
+
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [operations, setOperations] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [operations, setOperations] = useState<OperationsProps[]>([]);
 
   async function getOperations() {
     const { "fakeatm.token": token } = parseCookies();
-
     api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-    const response = await api.get("/operations/listAll");
+    const response = await api.get(`/operations/list/${client.id}`);
+    setIsLoading(false);
     setOperations(response.data);
   }
 
   useEffect(() => {
     getOperations();
-  }, []);
+  }, [client]);
 
   return (
     <>
@@ -49,14 +48,19 @@ export function Dashboard() {
         <VStack mt={10} spacing={10}>
           <Flex w="100%" justifyContent="space-between">
             <Text fontSize="2xl">Lista de operações</Text>
-            <button onClick={getOperations}>teste</button>
             <ComponentButton
               bg="green"
               label="Adicionar operação"
               onClick={() => onOpen()}
             />
           </Flex>
-          <ListOperations operations={operations} />
+          {operations.length === 0 && isLoading === true ? (
+            <Spinner />
+          ) : (
+            <>
+              <ListOperations operations={operations} />
+            </>
+          )}
         </VStack>
       </Box>
     </>

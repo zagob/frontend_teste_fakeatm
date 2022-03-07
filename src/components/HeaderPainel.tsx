@@ -7,9 +7,9 @@ export function HeaderPainel() {
   const { signOut, client } = useContext(AuthContext);
   return (
     <Flex justifyContent="space-between" alignItems="center">
-      <Heading fontSize="2xl">Bem Vindo(a)</Heading>
+      <Heading fontSize="2xl">FakeATM</Heading>
       <Flex alignItems="center" gap={5}>
-        <Text fontSize="larger">Olá, {client.name}</Text>
+        <Text fontSize="larger">Bem Vindo(a), {client.name}</Text>
         <IconButton
           onClick={() => signOut()}
           background="none"

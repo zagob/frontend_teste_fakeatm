@@ -16,6 +16,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { SetStateAction } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { api } from "../../database/axios";
@@ -25,7 +26,7 @@ import { OperationsProps } from "../ListOperations";
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
-  setOperations: React.Dispatch<React.SetStateAction<never[]>>;
+  setOperations: React.Dispatch<React.SetStateAction<OperationsProps[]>>;
 }
 
 const OperationFormSchema = yup.object().shape({
@@ -54,14 +55,64 @@ export function ModalAddOperation({
   async function handleAddOperation(data: OperationsProps) {
     const { value, note_preference } = data;
 
+    const CountPackage = value / note_preference;
+    const operationAccept = (value / note_preference) % 1;
+
+    if (CountPackage > 50) {
+      return toast({
+        duration: 5000,
+        title:
+          "A operação está com limite de pacotes acima de 50, tente novamente!",
+        position: "top-right",
+        status: "warning",
+        isClosable: true,
+      });
+    }
+
+    if (operationAccept !== 0) {
+      return toast({
+        duration: 5000,
+        title: "Operacao Invalida",
+        position: "top-right",
+        status: "warning",
+        isClosable: true,
+      });
+    }
+
     if (
       note_preference === 10 ||
       note_preference === 50 ||
       note_preference === 100
     ) {
       const response = await api.post("/operations/create", data);
-      // setOperations();
-      console.log(response)
+      setOperations((item: OperationsProps[]) => item.concat(response.data));
+
+      const asyncIterable = {
+        [Symbol.asyncIterator]() {
+          return {
+            i: 1,
+            next() {
+              if (this.i <= CountPackage) {
+                return Promise.resolve({ value: this.i++, done: false });
+              }
+
+              return Promise.resolve({ done: true });
+            },
+          };
+        },
+      };
+
+      (async function () {
+        for await (let num of asyncIterable) {
+          const responsePackage = await api.post(
+            `/packages/create/${response.data.id}`,
+            {
+              type_note: note_preference,
+            }
+          );
+        }
+      })();
+      onClose();
       return;
     }
 

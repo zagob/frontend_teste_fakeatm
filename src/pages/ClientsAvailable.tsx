@@ -24,6 +24,7 @@ import { Link } from "react-router-dom";
 import { ModalEditClient } from "../components/Modals/ModalEditClient";
 import { api } from "../database/axios";
 import { ModalDeleteClient } from "../components/Modals/ModalDeleteClient";
+import { ToastChakraError } from "../errors/ToastChakraError";
 
 export interface ClientPropsData {
   id: string;
@@ -45,9 +46,21 @@ export function ClientsAvailable() {
 
   useEffect(() => {
     async function getClients() {
-      const response = await api.get("/clients");
+      try {
+        const response = await api.get("/clients");
 
-      setClients(response.data);
+        setClients(response.data);
+      } catch (err: any) {
+        if (err.message === "Network Error") {
+          return toast({
+            title: "Erro interno com servidor!",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+            position: "top-right",
+          });
+        }
+      }
     }
 
     getClients();
@@ -88,7 +101,7 @@ export function ClientsAvailable() {
   }
 
   async function handleDeleteClient(id: string) {
-    // await api.delete('/')
+    await api.delete(`/clients/delete/${id}`);
     setClients((clients) => clients.filter((client) => client.id !== id));
     toast({
       title: "Cliente Excluido com Sucesso!",

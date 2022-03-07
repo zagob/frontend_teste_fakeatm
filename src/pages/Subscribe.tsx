@@ -8,9 +8,9 @@ import {
 } from "@chakra-ui/react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { SubmitHandler, useForm } from "react-hook-form";
-import InputMask, { Props } from "react-input-mask";
+import InputMask from "react-input-mask";
 import * as yup from "yup";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ComponentButton } from "../components/Button";
 import { InputBase } from "../components/Input";
 import { BiUser } from "react-icons/bi";
@@ -39,6 +39,7 @@ const subscribeInFormSchema = yup.object().shape({
 });
 
 export function Subscribe() {
+  const navigate = useNavigate();
   const toast = useToast();
   const {
     register,
@@ -68,9 +69,7 @@ export function Subscribe() {
       cpf: formatCpf,
     };
 
-    const response = await api.post("/clients", data).catch((err) => {
-      console.log(err);
-    });
+    const response = await api.post("/clients", data);
 
     if (!response) {
       toast({
@@ -94,6 +93,7 @@ export function Subscribe() {
     });
 
     reset();
+    navigate("/");
   };
 
   return (
@@ -249,7 +249,12 @@ export function Subscribe() {
           </SimpleGrid>
 
           <Flex w="100%" gap={6} justifyContent="flex-end" mt={5}>
-            <ComponentButton label="Enviar dados" bg="#000" type="submit" />
+            <ComponentButton
+              label="Enviar dados"
+              bg="#000"
+              type="submit"
+              isLoading={isSubmitting}
+            />
             <Link to="/">
               <ComponentButton label="Login" bg="#25239E" type="button" />
             </Link>

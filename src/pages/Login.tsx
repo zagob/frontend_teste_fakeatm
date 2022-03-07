@@ -110,7 +110,13 @@ export function Login() {
             {...register("password")}
           />
           <Flex w="100%" gap={6} justifyContent="center" mt={5}>
-            <ComponentButton w="100%" label="Entrar" bg="#000" type="submit" />
+            <ComponentButton
+              w="100%"
+              label="Entrar"
+              bg="#000"
+              type="submit"
+              isLoading={isSubmitting}
+            />
             <Link to="/cadastro">
               <ComponentButton
                 w="100%"

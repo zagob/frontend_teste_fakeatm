@@ -1,8 +1,9 @@
 import { Table, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/react";
+import { formatNumberCoin } from "../utils/formatNumberCoin";
 
 export interface PackagesProps {
   id?: string;
-  type_note?: number;
+  type_note: number;
 }
 
 interface ListPackagesProps {
@@ -23,7 +24,7 @@ export function ListPackages({ packages }: ListPackagesProps) {
         <Tbody>
           {packages.map((item) => (
             <Tr key={item.id}>
-              <Td>{item.type_note}</Td>
+              <Td>{formatNumberCoin(item.type_note)}</Td>
             </Tr>
           ))}
         </Tbody>
